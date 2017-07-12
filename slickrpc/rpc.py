@@ -19,7 +19,11 @@ import ujson
 import base64
 from configobj import ConfigObj
 from pycurl import Curl
-import urlparse
+
+try:
+    import urlparse
+except:
+    from urllib import parse as urlparse
 
 try:
     from cStringIO import StringIO
@@ -27,7 +31,7 @@ except:
     try:
         from StringIO import StringIO
     except ImportError:
-        from io import StringIO
+        from io import BytesIO as StringIO
 
 from .exc import RpcException
 
@@ -56,7 +60,7 @@ class Proxy(object):
 
     def __getattr__(self, method):
         conn = self.conn
-        id = self._ids.next()
+        id = next(self._ids)
         def call(*params):
             postdata = ujson.dumps({"jsonrpc": "2.0",
                                     "method": method,
@@ -75,11 +79,13 @@ class Proxy(object):
     @classmethod
     def prepare_connection(cls, conf, timeout=DEFAULT_HTTP_TIMEOUT):
         url = 'http://%s:%s' % (conf['rpchost'], conf['rpcport'])
-        auth_header = b"Basic " + base64.b64encode('%s:%s' %
-                                                   (conf['rpcuser'],
-                                                    conf['rpcpassword']))
+        auth_header = b"Basic " + base64.b64encode(
+                                    ('%s:%s' %
+                                     (conf['rpcuser'],
+                                      conf['rpcpassword'])).encode('utf8'))
         conn = Curl()
-        conn.setopt(conn.HTTPHEADER, ["Authorization: %s" % auth_header])
+        conn.setopt(conn.HTTPHEADER, ["Authorization: %s"
+                                      % auth_header.decode('utf8')])
         conn.setopt(conn.CONNECTTIMEOUT, timeout)
         conn.setopt(conn.TIMEOUT, timeout)
         conn.setopt(conn.URL, url)

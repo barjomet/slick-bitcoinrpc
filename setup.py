@@ -1,7 +1,7 @@
 #!/usr/bin/env pytho
 from distutils.core import setup
 
-VERSION = "0.1.3"
+VERSION = "0.1.4"
 setup(name='slick-bitcoinrpc',
     version=VERSION,
     description='Just another Python bitcoin-rpc client',
