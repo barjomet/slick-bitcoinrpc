@@ -51,7 +51,7 @@ Here's bash script able to measure performance of such bitcoin rpc clients
 
 Results
 -------
-
+Tested on ancient dual core laptop with Debian 8 and Python 2.7.13
 Values are best of 3, msec per loop
 
 
